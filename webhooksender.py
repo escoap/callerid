@@ -91,4 +91,4 @@ try:
     sendtohook(toJson(startdate(CSV_FILE),enddate(CSV_FILE),recordcount(CSV_FILE), csvencode64(CSV_FILE)), WEBHOOK_URL) 
 except:
     print("An Error has occurred (check internet connection)")
-print(now.strftime("%Y-%m-%d %H:%M:%S"))    
+print(now.strftime("%Y-%m-%d %H:%M:%S"))   
