@@ -1,17 +1,17 @@
 
 import csv
 import json
-import socket
 import base64
 import uuid
 import requests
+import time
 import re # Used for parsing parts of CallerID.com records
 import sys # Used to terminate program
+import datetime
 
-CSV_FILE = "calls.csv"  # name of the CSV file to save the data to
-NON_DETAILED_PATTERN = ".*(\d\d) ([IO]) ([ESB]) (\d{4}) ([GB]) (.)(\d) (\d\d/\d\d \d\d:\d\d [AP]M) (.{14})(.{15})"
-DETAILED_PATTERN = ".*(\d\d) ([NFR]) {13}(\d\d/\d\d \d\d:\d\d:\d\d)"
-WEBHOOK_URL = "https://webhook.site/7d1bf192-e010-4a09-ba05-c7818885e550"  # URL of the webhook to send data to
+now = datetime.datetime.now()
+CSV_FILE = "/home/pi/callerid/calls.csv"  # name of the CSV file to save the data to
+WEBHOOK_URL = "https://api.sendsationaltext.com/webhook/callerid/"  # URL of the webhook to send data to
 client_id = "TEST"
 
 def sendtohook(file, url):
@@ -25,7 +25,7 @@ def sendtohook(file, url):
         print(response.content)
         with open(CSV_FILE, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["number", "timestamp", "name", "call_type", "call_duration"])
+            writer.writerow(["number", "timestamp", "name"])
     else:
         print("Error sending CSV data!")
         print(response.status_code)
@@ -41,12 +41,15 @@ def csvencode64(file):
 
 
 def startdate(file):
-    with open(file, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        next(reader)
-        first_row = next(reader) # Get the first row
-        second_column = first_row[1] # Get the second column of the first row
-        return second_column
+    try:
+        with open(file, newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader)
+            first_row = next(reader) # Get the first row
+            second_column = first_row[1] # Get the second column of the first row
+            return second_column
+    except:
+        return "No Records Found"    
 
 def enddate(file):
     with open(file, newline='') as csvfile:
@@ -55,6 +58,8 @@ def enddate(file):
         for row in reader:
             last_row = row
     second_column = last_row[1] # Get the second column of the last row
+    if second_column == "timestamp":
+        return "No Records Found"
     return second_column
 
 def toJson(record_start, record_end, record_count, records):
@@ -83,6 +88,7 @@ def recordcount(file):
 
         
 try:
-    sendtohook(toJson(startdate(CSV_FILE),enddate(CSV_FILE),recordcount(CSV_FILE), csvencode64(CSV_FILE)), WEBHOOK_URL)
+    sendtohook(toJson(startdate(CSV_FILE),enddate(CSV_FILE),recordcount(CSV_FILE), csvencode64(CSV_FILE)), WEBHOOK_URL) 
+    print(now.strftime("%Y-%m-%d %H:%M:%S"))
 except:
     print("An Error has occurred (check internet connection)")

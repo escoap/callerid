@@ -5,9 +5,8 @@ import socket
 
 UDP_IP = "0.0.0.0"  # listen on all available network interfaces
 UDP_PORT = 3520  # choose a port number that matches the device's configuration
-CSV_FILE = "calls.csv"  # name of the CSV file to save the data to
-FULL_CALL_LOG = "full_call_log.csv"
-LISTEN_ON_UDP_PORT = 3520
+CSV_FILE = "/home/pi/callerid/calls.csv"  # name of the CSV file to save the data to
+FULL_CALL_LOG = "/home/pi/callerid/full_call_log.csv"
 NON_DETAILED_PATTERN = ".*(\d\d) ([IO]) ([ESB]) (\d{4}) ([GB]) (.)(\d) (\d\d/\d\d \d\d:\d\d [AP]M) (.{14})(.{15})"
 DETAILED_PATTERN = ".*(\d\d) ([NFR]) {13}(\d\d/\d\d \d\d:\d\d:\d\d)"
 # TAKE INPUT DATA AND PARSE PARTS
@@ -93,7 +92,7 @@ print("Listening for UDP packets on port {}...".format(UDP_PORT))
 # # create a CSV file and write a header row
 with open(CSV_FILE, "w", newline="") as f:
     writer = csv.writer(f)
-    writer.writerow(["number", "timestamp", "name", "call_type", "call_duration"])    
+    writer.writerow(["number", "timestamp", "name"])    
 
 
 # # continuously receive UDP packets and write their contents to the CSV file
