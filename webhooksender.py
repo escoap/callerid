@@ -4,7 +4,6 @@ import json
 import base64
 import uuid
 import requests
-import time
 import re # Used for parsing parts of CallerID.com records
 import sys # Used to terminate program
 import datetime
