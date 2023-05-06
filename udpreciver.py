@@ -1,6 +1,5 @@
 import csv
 import re # Used for parsing parts of CallerID.com records
-import sys # Used to terminate program
 import socket
 
 UDP_IP = "0.0.0.0"  # listen on all available network interfaces
@@ -16,10 +15,8 @@ def parse_packet(packet):
     packet = packet.decode("utf-8")
 
     non_detailed_match = re.search(NON_DETAILED_PATTERN, packet)
-    detailed_match = re.search(DETAILED_PATTERN, packet)
 
     # Call type
-    detailed_call = False
 
     # Parsed non_detailed variables for use in program
     pLineNumber = ""
@@ -33,16 +30,8 @@ def parse_packet(packet):
     pNumber = ""
     pName = ""
 
-    # Parsed detailed variables for use in program
-    pDetailedStatus = ""
-    pDetailedDate = ""
-
     # If call is a non-deatiled packet
     if non_detailed_match:
-
-        # Set call type
-        detailed_call = False
-
         # Parse variables
         pLineNumber = non_detailed_match.group(1)
         pInboundOrOutbound = non_detailed_match.group(2)
@@ -71,17 +60,18 @@ def parse_packet(packet):
         call_data = {
         "timestamp": pDateTime,
         "number": pNumber,
-        "name": pName
-    }
+        "name": pName}
 
-    # write the Csv object to the file
-    with open(CSV_FILE, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([call_data['number'], call_data['timestamp'],call_data['name']])
+        # write the Csv object to the file
+        with open(CSV_FILE, "a", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([call_data['number'], call_data['timestamp'],call_data['name']])
 
-    with open(FULL_CALL_LOG, "a", newline="") as f2:
-        writer = csv.writer(f2)
-        writer.writerow([call_data['number'], call_data['timestamp'],call_data['name']])
+        with open(FULL_CALL_LOG, "a", newline="") as f2:
+            writer = csv.writer(f2)
+            writer.writerow([call_data['number'], call_data['timestamp'],call_data['name']])
+    else:
+        print("non call match")
 
 # create a UDP socket and bind it to the specified IP address and port number
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -98,4 +88,8 @@ with open(CSV_FILE, "w", newline="") as f:
 # # continuously receive UDP packets and write their contents to the CSV file
 while True:
     data, addr = sock.recvfrom(1024)  # receive up to 1024 bytes of data
-    parse_packet(data)
+    try:
+        parse_packet(data)
+    except:
+        print("Error: " + data)
+#516-357-7336  ,05/06 02:02 PM, CURTIN MARY

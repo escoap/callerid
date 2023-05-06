@@ -4,13 +4,11 @@ import json
 import base64
 import uuid
 import requests
-import re # Used for parsing parts of CallerID.com records
-import sys # Used to terminate program
 import datetime
 
 now = datetime.datetime.now()
 CSV_FILE = "/home/pi/callerid/calls.csv"  # name of the CSV file to save the data to
-WEBHOOK_URL = "https://api.sendsationaltext.com/webhook/callerid/"  # URL of the webhook to send data to
+WEBHOOK_URL = "	https://webhook.site/7d1bf192-e010-4a09-ba05-c7818885e550" #"https://api.sendsationaltext.com/webhook/callerid/"  # URL of the webhook to send data to
 client_id = "TEST"
 
 def sendtohook(file, url):
